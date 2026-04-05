@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const kBottomColor = Color(0xFF15B86C);
+
 const kTextFieldDecoration = InputDecoration(
   hintText: 'e.g Alaa Abdelkarim',
   hintStyle: TextStyle(color: Colors.grey),

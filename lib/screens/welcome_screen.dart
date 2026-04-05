@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:planify/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
 
   static const String id = 'welcome_screen';
-  // final TextEditingController controller = TextEditingController();
+  final TextEditingController controller = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   @override
@@ -69,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
                       Text('Full Name', style: kTextStyle),
                       SizedBox(height: 8),
                       TextFormField(
-                        // controller: controller,
+                        controller: controller,
                         validator: (String? value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your name.';
@@ -84,15 +85,20 @@ class WelcomeScreen extends StatelessWidget {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           // backgroundColor: Color(0xff212121),
-                          backgroundColor: Color(0xFF15B86C),
+                          backgroundColor: kBottomColor,
                           foregroundColor: Color(0xFFFFFCFC),
                           fixedSize: Size(
                             MediaQuery.of(context).size.width,
                             40,
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_key.currentState?.validate() ?? false) {
+                            final pref = await SharedPreferences.getInstance();
+                            await pref.setString(
+                              'username',
+                              controller.value.text,
+                            );
                             Navigator.pushNamed(context, HomeScreen.id);
                           }
                         },
