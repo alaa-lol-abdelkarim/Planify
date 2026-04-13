@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/add_task.dart';
+import 'screens/add_task_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -21,7 +21,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Planify',
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF181818),
+          foregroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+      ),
       // initialRoute: username == null ? WelcomeScreen.id : HomeScreen.id,
       initialRoute: WelcomeScreen.id,
       routes: {

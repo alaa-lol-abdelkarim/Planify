@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:planify/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'add_task.dart';
+import 'add_task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? username = 'Default';
+  List<dynamic> task = [];
 
   @override
   void initState() {
@@ -22,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _loadUsername();
+    _loadTask();
   }
 
   void _loadUsername() async {
@@ -32,14 +36,41 @@ class _HomeScreenState extends State<HomeScreen> {
     print('username = $username');
   }
 
+  void _loadTask() async {
+    final pref = await SharedPreferences.getInstance();
+    final finalTask = pref.getString('task');
+    if (finalTask != null) {
+      final taskAfterDecode = jsonDecode(finalTask) as List<dynamic>;
+      setState(() {
+        task = taskAfterDecode;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff181818),
+      backgroundColor: kDarkModeScreenColor,
+      floatingActionButton: SizedBox(
+        height: 40,
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.pushNamed(context, AddTask.id);
+          },
+          backgroundColor: kBottomColor,
+          foregroundColor: Colors.white,
+          icon: Icon(Icons.add),
+          label: Text('Add New Task'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,11 +97,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(height: 16),
+              Text(
+                'Yuhuu ,Your work Is',
+                style: kTextStyle.copyWith(fontSize: 32),
+              ),
               Row(
                 children: [
                   Text(
-                    'Yuhuu ,Your work Is almost done !',
-                    style: kTextStyle.copyWith(fontSize: 20),
+                    'almost done !',
+                    style: kTextStyle.copyWith(fontSize: 32),
                   ),
                   SizedBox(width: 8),
                   SvgPicture.asset('assets/images/waving_hand.svg'),
@@ -103,21 +138,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              Spacer(),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kBottomColor,
-                    foregroundColor: Color(0xFFFFFCFC),
-                  ),
-                  icon: Icon(Icons.add),
-                  label: Text('Add New Task'),
-                  onPressed: () {
-                    Navigator.pushNamed(context, AddTask.id);
-                  },
-                ),
-              ),
+              SizedBox(height: 16),
+
+              // Spacer(),
+              // Align(
+              //   alignment: Alignment.bottomRight,
+              //   child: ElevatedButton.icon(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: kBottomColor,
+              //       foregroundColor: Color(0xFFFFFCFC),
+              //     ),
+              //     icon: Icon(Icons.add),
+              //     label: Text('Add New Task'),
+              //     onPressed: () {
+              //       Navigator.pushNamed(context, AddTask.id);
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -14,7 +14,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff181818),
+      backgroundColor: kDarkModeScreenColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Form(
@@ -73,7 +73,7 @@ class WelcomeScreen extends StatelessWidget {
                         controller: controller,
                         validator: (String? value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your name.';
+                            return 'Please enter your full name.';
                           }
                           return null;
                         },
