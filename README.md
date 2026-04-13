@@ -1,6 +1,6 @@
 # planify
 
-Todo app
+Planify is a friendly todo app
 
 ## Getting Started
 
