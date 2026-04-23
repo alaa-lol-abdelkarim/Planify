@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planify/screens/main_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_task_screen.dart';
@@ -29,8 +30,8 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
-      // initialRoute: username == null ? WelcomeScreen.id : HomeScreen.id,
-      initialRoute: WelcomeScreen.id,
+      initialRoute: username == null ? WelcomeScreen.id : MainScreen.id,
+      // initialRoute: WelcomeScreen.id,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         HomeScreen.id: (context) => HomeScreen(),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:planify/constants.dart';
+import 'package:planify/models/task_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_task_screen.dart';
 
@@ -17,32 +18,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? username = 'Default';
-  List<dynamic> task = [];
+  List<TaskModel> task = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     _loadUsername();
     _loadTask();
   }
 
   void _loadUsername() async {
     final pref = await SharedPreferences.getInstance();
-    username = pref.getString('username');
-    setState(() {});
-
-    print('username = $username');
+    setState(() {
+      username = pref.getString('username') ?? 'User';
+    });
   }
 
   void _loadTask() async {
     final pref = await SharedPreferences.getInstance();
-    final finalTask = pref.getString('task');
+    final finalTask = pref.getString('tasks');
     if (finalTask != null) {
-      final taskAfterDecode = jsonDecode(finalTask) as List<dynamic>;
+      final List<dynamic> taskAfterDecode = jsonDecode(finalTask);
       setState(() {
-        task = taskAfterDecode;
+        task = taskAfterDecode
+            .map((element) => TaskModel.fromJson(element))
+            .toList();
       });
     }
   }
@@ -52,15 +52,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: kDarkModeScreenColor,
       floatingActionButton: SizedBox(
-        height: 40,
+        height: 48,
         child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushNamed(context, AddTask.id);
+          onPressed: () async {
+            await Navigator.pushNamed(context, AddTask.id);
+            _loadTask();
           },
           backgroundColor: kBottomColor,
           foregroundColor: Colors.white,
-          icon: Icon(Icons.add),
-          label: Text('Add New Task'),
+          icon: const Icon(Icons.add),
+          label: const Text('Add New Task'),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
@@ -73,63 +74,70 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
                     radius: 24,
                     child: SvgPicture.asset('assets/images/avatar.svg'),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Good Evening, $username', style: kTextStyle),
-                      Text(
-                        'One task at a time.One step closer.',
-                        style: kTextStyle.copyWith(
-                          fontSize: 14,
-                          color: Color(0xffC6C6C6),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Good Evening, $username', style: kTextStyle),
+                        Text(
+                          'One task at a time. One step closer.',
+                          style: kTextStyle.copyWith(
+                            fontSize: 14,
+                            color: const Color(0xffC6C6C6),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.wb_sunny_outlined, color: Colors.white),
+                  const Icon(Icons.wb_sunny_outlined, color: Colors.white),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 24),
               Text(
-                'Yuhuu ,Your work Is',
-                style: kTextStyle.copyWith(fontSize: 32),
+                'Yuhuu, Your work Is',
+                style: kTextStyle.copyWith(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Row(
                 children: [
                   Text(
-                    'almost done !',
-                    style: kTextStyle.copyWith(fontSize: 32),
+                    'almost done!',
+                    style: kTextStyle.copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  SizedBox(width: 8),
-                  SvgPicture.asset('assets/images/waving_hand.svg'),
+                  const SizedBox(width: 8),
+                  SvgPicture.asset('assets/images/waving_hand.svg', height: 28),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 24),
               Card(
-                color: Color(0xff282828),
+                color: const Color(0xff282828),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Achieved Tasks', style: kTextStyle),
+                          const Text('Achieved Tasks', style: kTextStyle),
                           Text(
-                            '3 Out of 6 Done',
+                            '${task.where((t) => t.isDone).length} Out of ${task.length} Done',
                             style: kTextStyle.copyWith(
                               fontSize: 14,
-                              color: Color(0xffC6C6C6),
+                              color: const Color(0xffC6C6C6),
                             ),
                           ),
                         ],
@@ -138,23 +146,109 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-
-              // Spacer(),
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: ElevatedButton.icon(
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: kBottomColor,
-              //       foregroundColor: Color(0xFFFFFCFC),
-              //     ),
-              //     icon: Icon(Icons.add),
-              //     label: Text('Add New Task'),
-              //     onPressed: () {
-              //       Navigator.pushNamed(context, AddTask.id);
-              //     },
-              //   ),
-              // ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: EdgeInsetsGeometry.only(top: 24.0, bottom: 16.0),
+                child: Text('Tasks', style: kTextStyle.copyWith(fontSize: 20)),
+              ),
+              Expanded(
+                child: task.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No tasks yet. Tap + to add one!',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: EdgeInsets.only(bottom: 55.0),
+                        itemCount: task.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xff282828),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Checkbox(
+                                      activeColor: kBottomColor,
+                                      value: task[index].isDone,
+                                      onChanged: (bool? value) async {
+                                        setState(() {
+                                          task[index].isDone = value ?? false;
+                                        });
+                                        // Save changes to SharedPreferences
+                                        final pref =
+                                            await SharedPreferences.getInstance();
+                                        final updatedTask = task
+                                            .map((element) => element.toJson())
+                                            .toList();
+                                        await pref.setString(
+                                          'tasks',
+                                          jsonEncode(updatedTask),
+                                        );
+                                      },
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          4.0,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            task[index].taskName,
+                                            style: kTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: task[index].isDone
+                                                  ? Color(0xFFA0A0A0)
+                                                  : Color(0xffffffff),
+                                              decoration: task[index].isDone
+                                                  ? TextDecoration.lineThrough
+                                                  : null,
+                                              decorationColor: Color(
+                                                0xFFA0A0A0,
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            task[index].taskDescription,
+                                            style: kTextStyle.copyWith(
+                                              fontSize: 14,
+                                              color: const Color(0xffC6C6C6),
+                                              decoration: task[index].isDone
+                                                  ? TextDecoration.lineThrough
+                                                  : null,
+                                              decorationColor: Color(
+                                                0xFFA0A0A0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: Color(0xffC6C6C6),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
         ),

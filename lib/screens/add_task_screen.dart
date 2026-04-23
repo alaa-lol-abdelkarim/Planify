@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:planify/constants.dart';
+import 'package:planify/models/task_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTask extends StatefulWidget {
@@ -56,12 +57,6 @@ class _AddTaskState extends State<AddTask> {
                 TextFormField(
                   maxLines: 6,
                   controller: taskDescriptionController,
-                  validator: (String? value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter task description.';
-                    }
-                    return null;
-                  },
                   decoration: kTextFieldDecoration.copyWith(
                     hintText: 'e.g Doing Homework Details',
                   ),
@@ -97,24 +92,22 @@ class _AddTaskState extends State<AddTask> {
                     label: Text('Add Task'),
                     onPressed: () async {
                       if (_key.currentState?.validate() ?? false) {
-                        final task = <String, dynamic>{
-                          "taskName": taskNameController.text,
-                          "taskDescription": taskDescriptionController.text,
-                          "isHighPriority": isHighPriority,
-                        };
+                        TaskModel model = TaskModel(
+                          taskName: taskNameController.text,
+                          taskDescription: taskDescriptionController.text,
+                          isHighPriority: isHighPriority,
+                        );
+
                         final pref = await SharedPreferences.getInstance();
                         final taskJason = pref.getString('tasks');
                         List<dynamic> listOfTasks = [];
                         if (taskJason != null) {
                           listOfTasks = jsonDecode(taskJason);
                         }
-                        print('list before adding: $listOfTasks');
-                        listOfTasks.add(task);
-                        print('list after adding: $listOfTasks');
-
+                        listOfTasks.add(model.toJson());
                         final taskEncode = jsonEncode(listOfTasks);
                         await pref.setString('tasks', taskEncode);
-                        // Navigator.pop(context);
+                        Navigator.pop(context);
                       }
                     },
                   ),
