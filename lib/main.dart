@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planify/constants.dart';
 import 'package:planify/screens/main_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
@@ -24,18 +25,20 @@ class MyApp extends StatelessWidget {
       title: 'Planify',
       theme: ThemeData(
         useMaterial3: true,
+        scaffoldBackgroundColor: kDarkModeScreenColor,
         appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFF181818),
+          backgroundColor: kDarkModeScreenColor,
           foregroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
       initialRoute: username == null ? WelcomeScreen.id : MainScreen.id,
-      // initialRoute: WelcomeScreen.id,
+      // initialRoute: MainScreen.id,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         HomeScreen.id: (context) => HomeScreen(),
         AddTask.id: (context) => AddTask(),
+        MainScreen.id: (context) => MainScreen(),
       },
     );
   }

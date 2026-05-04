@@ -25,7 +25,6 @@ class _AddTaskState extends State<AddTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kDarkModeScreenColor,
       appBar: AppBar(title: Text('Add Task')),
       body: SafeArea(
         child: Padding(
@@ -107,7 +106,7 @@ class _AddTaskState extends State<AddTask> {
                         listOfTasks.add(model.toJson());
                         final taskEncode = jsonEncode(listOfTasks);
                         await pref.setString('tasks', taskEncode);
-                        Navigator.pop(context);
+                        Navigator.of(context).pop(true);
                       }
                     },
                   ),
