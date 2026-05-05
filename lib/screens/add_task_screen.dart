@@ -91,18 +91,19 @@ class _AddTaskState extends State<AddTask> {
                     label: Text('Add Task'),
                     onPressed: () async {
                       if (_key.currentState?.validate() ?? false) {
+                        final pref = await SharedPreferences.getInstance();
+                        final taskJson = pref.getString('tasks');
+                        List<dynamic> listOfTasks = [];
+                        if (taskJson != null) {
+                          listOfTasks = jsonDecode(taskJson);
+                        }
                         TaskModel model = TaskModel(
+                          id: listOfTasks.length + 1,
                           taskName: taskNameController.text,
                           taskDescription: taskDescriptionController.text,
                           isHighPriority: isHighPriority,
                         );
 
-                        final pref = await SharedPreferences.getInstance();
-                        final taskJason = pref.getString('tasks');
-                        List<dynamic> listOfTasks = [];
-                        if (taskJason != null) {
-                          listOfTasks = jsonDecode(taskJason);
-                        }
                         listOfTasks.add(model.toJson());
                         final taskEncode = jsonEncode(listOfTasks);
                         await pref.setString('tasks', taskEncode);

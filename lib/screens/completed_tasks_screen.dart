@@ -12,7 +12,7 @@ class CompletedTasksScreen extends StatefulWidget {
 }
 
 class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
-  List<TaskModel> task = [];
+  List<TaskModel> completeTasks = [];
 
   @override
   void initState() {
@@ -26,10 +26,12 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
     if (finalTask != null) {
       final List<dynamic> taskAfterDecode = jsonDecode(finalTask);
       setState(() {
-        task = taskAfterDecode
+        completeTasks = taskAfterDecode
             .map((element) => TaskModel.fromJson(element))
             .toList();
-        task = task.where((element) => element.isDone == true).toList();
+        completeTasks = completeTasks
+            .where((element) => element.isDone == true)
+            .toList();
       });
     }
   }
@@ -42,17 +44,25 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
         padding: const EdgeInsets.all(8.0),
         child: TaskListWidget(
           taskMessage: 'No tasks completed yet.',
-          task: task,
+          task: completeTasks,
           updateTask: (bool? value, int? index) async {
             setState(() {
-              task[index!].isDone = value ?? false;
+              completeTasks[index!].isDone = value ?? false;
             });
             final pref = await SharedPreferences.getInstance();
-            final updatedTask = task
-                .map((element) => element.toJson())
-                .toList();
-            await pref.setString('tasks', jsonEncode(updatedTask));
-            _loadTask();
+
+            final allData = pref.getString('tasks');
+            if (allData != null) {
+              List<TaskModel> allDataList = (jsonDecode(allData) as List)
+                  .map((element) => TaskModel.fromJson(element))
+                  .toList();
+              final newIndex = allDataList.indexWhere(
+                (element) => element.id == completeTasks[index!].id,
+              );
+              allDataList[newIndex] = completeTasks[index!];
+              await pref.setString('tasks', jsonEncode(allDataList));
+              _loadTask();
+            }
           },
         ),
       ),

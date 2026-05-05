@@ -12,7 +12,7 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  List<TaskModel> task = [];
+  List<TaskModel> todoTasks = [];
 
   @override
   void initState() {
@@ -26,10 +26,12 @@ class _TasksScreenState extends State<TasksScreen> {
     if (finalTask != null) {
       final List<dynamic> taskAfterDecode = jsonDecode(finalTask);
       setState(() {
-        task = taskAfterDecode
+        todoTasks = taskAfterDecode
             .map((element) => TaskModel.fromJson(element))
             .toList();
-        task = task.where((element) => element.isDone == false).toList();
+        todoTasks = todoTasks
+            .where((element) => element.isDone == false)
+            .toList();
       });
     }
   }
@@ -42,17 +44,25 @@ class _TasksScreenState extends State<TasksScreen> {
         padding: const EdgeInsets.all(8.0),
         child: TaskListWidget(
           taskMessage: 'No tasks yet.',
-          task: task,
+          task: todoTasks,
           updateTask: (bool? value, int? index) async {
             setState(() {
-              task[index!].isDone = value ?? false;
+              todoTasks[index!].isDone = value ?? false;
             });
             final pref = await SharedPreferences.getInstance();
-            final updatedTask = task
-                .map((element) => element.toJson())
-                .toList();
-            await pref.setString('tasks', jsonEncode(updatedTask));
-            _loadTask();
+
+            final allData = pref.getString('tasks');
+            if (allData != null) {
+              List<TaskModel> allDataList = (jsonDecode(allData) as List)
+                  .map((element) => TaskModel.fromJson(element))
+                  .toList();
+              final newIndex = allDataList.indexWhere(
+                (element) => element.id == todoTasks[index!].id,
+              );
+              allDataList[newIndex] = todoTasks[index!];
+              await pref.setString('tasks', jsonEncode(allDataList));
+              _loadTask();
+            }
           },
         ),
       ),
