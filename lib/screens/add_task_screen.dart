@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:planify/constants.dart';
 import 'package:planify/models/task_model.dart';
@@ -28,7 +27,7 @@ class _AddTaskState extends State<AddTask> {
       appBar: AppBar(title: Text('Add Task')),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _key,
             child: Column(
@@ -69,7 +68,6 @@ class _AddTaskState extends State<AddTask> {
                     Text('High Priority', style: kTextStyle),
                     Switch.adaptive(
                       value: isHighPriority,
-                      activeTrackColor: kBottomColor,
                       onChanged: (bool value) {
                         setState(() {
                           isHighPriority = value;

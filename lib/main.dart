@@ -31,6 +31,15 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.white),
         ),
+        switchTheme: SwitchThemeData(
+          trackColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return kBottomColor;
+            } else {
+              return Color(0xffffffff);
+            }
+          }),
+        ),
       ),
       initialRoute: username == null ? WelcomeScreen.id : MainScreen.id,
       // initialRoute: MainScreen.id,

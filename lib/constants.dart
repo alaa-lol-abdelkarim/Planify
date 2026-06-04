@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 const kBottomColor = Color(0xFF15B86C);
 const kDarkModeScreenColor = Color(0xFF181818);
+const kDarkModeTileColor = Color(0xFF282828);
+const kDarkModeBorderColor = Color(0xFF6E6E6E);
 
 const kTextFieldDecoration = InputDecoration(
   hintText: 'e.g Alaa Abdelkarim',

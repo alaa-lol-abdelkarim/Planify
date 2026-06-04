@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:planify/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:planify/screens/main_screen.dart';
-import 'home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomeScreen extends StatelessWidget {
